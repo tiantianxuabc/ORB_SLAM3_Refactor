@@ -51,12 +51,12 @@ If you use ORB-SLAM3 in an academic work, please cite:
      }
 
 # 2. Prerequisites
-We have tested the library in **Ubuntu 16.04** and **18.04**, but it should be easy to compile in other platforms. A powerful computer (e.g. i7) will ensure real-time performance and provide more stable and accurate results.
+We have tested the library in **Ubuntu 16.04** and **18.04** and **22.04**,  but it should be easy to compile in other platforms.
 
 ## C++11 or C++0x Compiler
 We use the new thread and chrono functionalities of C++11.
 
-## Pangolin
+## Pangolin (v0.5)  
 We use [Pangolin](https://github.com/stevenlovegrove/Pangolin) for visualization and user interface. Dowload and install instructions can be found at: https://github.com/stevenlovegrove/Pangolin.
 
 ## OpenCV
@@ -68,16 +68,6 @@ Required by g2o (see below). Download and install instructions can be found at: 
 ## DBoW2 and g2o (Included in Thirdparty folder)
 We use modified versions of the [DBoW2](https://github.com/dorian3d/DBoW2) library to perform place recognition and [g2o](https://github.com/RainerKuemmerle/g2o) library to perform non-linear optimizations. Both modified libraries (which are BSD) are included in the *Thirdparty* folder.
 
-## Python
-Required to calculate the alignment of the trajectory with the ground truth. **Required Numpy module**.
-
-* (win) http://www.python.org/downloads/windows
-* (deb) `sudo apt install libpython2.7-dev`
-* (mac) preinstalled with osx
-
-## ROS (optional)
-
-We provide some examples to process input of a monocular, monocular-inertial, stereo, stereo-inertial or RGB-D camera using ROS. Building these examples is optional. These have been tested with ROS Melodic under Ubuntu 18.04.
 
 # 3. Building ORB-SLAM3 library and examples
 
@@ -130,29 +120,17 @@ Execute the following script to process sequences and compute the RMS ATE:
 ```
 ./euroc_eval_examples
 ```  
+
+### Monocular
 ```  
 ./mono_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml  /home/myneml/Downloads/MH_02_easy/   ./EuRoC_TimeStamps/MH02.txt
 ```
 
-# 6. TUM-VI Examples
-[TUM-VI dataset](https://vision.in.tum.de/data/datasets/visual-inertial-dataset) was recorded with two fisheye cameras and an inertial sensor.
-
-1. Download a sequence from https://vision.in.tum.de/data/datasets/visual-inertial-dataset and uncompress it.
-
-2. Open the script "tum_vi_examples.sh" in the root of the project. Change **pathDatasetTUM_VI** variable to point to the directory where the dataset has been uncompressed. 
-
-3. Execute the following script to process all the sequences with all sensor configurations:
+### Monucular-Inertial
 ```
-./tum_vi_examples
+./mono_inertial_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml /home/myneml/Downloads/MH_02_easy/ ./EuRoC_TimeStamps/MH02.txt
 ```
 
-## Evaluation
-In TUM-VI ground truth is only available in the room where all sequences start and end. As a result the error measures the drift at the end of the sequence. 
-
-Execute the following script to process sequences and compute the RMS ATE:
-```
-./tum_vi_eval_examples
-```
 
 # 8. Running time analysis
 A flag in `include\Config.h` activates time measurements. It is necessary to uncomment the line `#define REGISTER_TIMES` to obtain the time stats of one execution which is shown at the terminal and stored in a text file(`ExecTimeMean.txt`).
