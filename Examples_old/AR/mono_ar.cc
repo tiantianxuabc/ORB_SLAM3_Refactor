@@ -22,15 +22,15 @@
 #include<fstream>
 #include<chrono>
 
-#include<ros/ros.h>
-#include <cv_bridge/cv_bridge.h>
+// #include <cv_bridge/cv_bridge.h>
 
 #include<opencv2/core/core.hpp>
 #include<opencv2/imgproc/imgproc.hpp>
 
-#include"../../../include/System.h"
 
-#include"ViewerAR.h"
+#include"System.h"
+
+#include "ViewerAR.h"
 
 using namespace std;
 
@@ -41,26 +41,29 @@ bool bRGB = true;
 cv::Mat K;
 cv::Mat DistCoef;
 
+void LoadImages(const string &strImagePath, const string &strPathTimes,
+                vector<string> &vstrImages, vector<double> &vTimeStamps);
+
 
 class ImageGrabber
 {
 public:
     ImageGrabber(ORB_SLAM3::System* pSLAM):mpSLAM(pSLAM){}
 
-    void GrabImage(const sensor_msgs::ImageConstPtr& msg);
+    void GrabImage(std::string& img_path, double& timestamps);
 
     ORB_SLAM3::System* mpSLAM;
 };
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "Mono");
-    ros::start();
+    // ros::init(argc, argv, "Mono");
+    // ros::start();
 
     if(argc != 3)
     {
         cerr << endl << "Usage: rosrun ORB_SLAM3 Mono path_to_vocabulary path_to_settings" << endl;        
-        ros::shutdown();
+        // ros::shutdown();
         return 1;
     }
 
@@ -84,8 +87,8 @@ int main(int argc, char **argv)
 
     ImageGrabber igb(&SLAM);
 
-    ros::NodeHandle nodeHandler;
-    ros::Subscriber sub = nodeHandler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage,&igb);
+    // ros::NodeHandle nodeHandler;
+    // ros::Subscriber sub = nodeHandler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage,&igb);
 
 
     cv::FileStorage fSettings(argv[2], cv::FileStorage::READ);
@@ -120,7 +123,7 @@ int main(int argc, char **argv)
 
     thread tViewer = thread(&ORB_SLAM3::ViewerAR::Run,&viewerAR);
 
-    ros::spin();
+    // ros::spin();
 
     // Stop all threads
     SLAM.Shutdown();
@@ -128,27 +131,31 @@ int main(int argc, char **argv)
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
 
-    ros::shutdown();
+    // ros::shutdown();
 
     return 0;
 }
 
-void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
+void ImageGrabber::GrabImage(std::string& img_path, double& timestamps)
 {
     // Copy the ros image message to cv::Mat.
-    cv_bridge::CvImageConstPtr cv_ptr;
-    try
-    {
-        cv_ptr = cv_bridge::toCvShare(msg);
-    }
-    catch (cv_bridge::Exception& e)
-    {
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
-    }
-    cv::Mat im = cv_ptr->image.clone();
+    // cv_bridge::CvImageConstPtr cv_ptr;
+    // try
+    // {
+    //     cv_ptr = cv_bridge::toCvShare(msg);
+    // }
+    // catch (cv_bridge::Exception& e)
+    // {
+    //     ROS_ERROR("cv_bridge exception: %s", e.what());
+    //     return;
+    // }
+    // cv::Mat im = cv_ptr->image.clone();
     cv::Mat imu;
-    cv::Mat Tcw = mpSLAM->TrackMonocular(cv_ptr->image,cv_ptr->header.stamp.toSec());
+    cv::Mat im = cv::imread(img_path,cv::IMREAD_UNCHANGED); //,CV_LOAD_IMAGE_UNCHANGED);
+    double tframe = timestamps;
+    Sophus::SE3f tmp_Tcw = mpSLAM->TrackMonocular(im,tframe);
+    cv::Mat Tcw(cv::Size(4, 3), CV_32FC1, cv::Scalar(0));
+    Tcw.at<float>(0, 0) = tmp_Tcw.data()[0];
     int state = mpSLAM->GetTrackingState();
     vector<ORB_SLAM3::MapPoint*> vMPs = mpSLAM->GetTrackedMapPoints();
     vector<cv::KeyPoint> vKeys = mpSLAM->GetTrackedKeyPointsUn();
@@ -165,3 +172,27 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 }
 
 
+
+void LoadImages(const string &strImagePath, const string &strPathTimes,
+                vector<string> &vstrImages, vector<double> &vTimeStamps)
+{
+    ifstream fTimes;
+    fTimes.open(strPathTimes.c_str());
+    vTimeStamps.reserve(5000);
+    vstrImages.reserve(5000);
+    while(!fTimes.eof())
+    {
+        string s;
+        getline(fTimes,s);
+        if(!s.empty())
+        {
+            stringstream ss;
+            ss << s;
+            vstrImages.push_back(strImagePath + "/" + ss.str() + ".png");
+            double t;
+            ss >> t;
+            vTimeStamps.push_back(t*1e-9);
+
+        }
+    }
+}

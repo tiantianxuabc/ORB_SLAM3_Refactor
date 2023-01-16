@@ -379,6 +379,15 @@ add_executable(stereo_inertial_tum_vi_old
         Examples_old/Stereo-Inertial/stereo_inertial_tum_vi.cc)
 target_link_libraries(stereo_inertial_tum_vi_old ${PROJECT_NAME})
 
+add_executable(MonoAR
+Examples_old/AR/mono_ar.cc
+Examples_old/AR/ViewerAR.h
+Examples_old/AR/ViewerAR.cc
+)
+
+target_link_libraries(MonoAR
+${PROJECT_NAME}
+)
 if(realsense2_FOUND)
     add_executable(stereo_inertial_realsense_t265_old
             Examples_old/Stereo-Inertial/stereo_inertial_realsense_t265.cc)

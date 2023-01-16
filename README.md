@@ -123,12 +123,12 @@ Execute the following script to process sequences and compute the RMS ATE:
 
 ### Monocular
 ```  
-./mono_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml  /home/myneml/Downloads/MH_02_easy/   ./EuRoC_TimeStamps/MH02.txt
+./mono_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml  /home/myneml/Downloads/Data_SLAM/MH_02_easy/   ./EuRoC_TimeStamps/MH02.txt
 ```
 
 ### Monucular-Inertial
 ```
-./mono_inertial_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml /home/myneml/Downloads/MH_02_easy/ ./EuRoC_TimeStamps/MH02.txt
+./mono_inertial_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml /home/myneml/Downloads/Data_SLAM/MH_02_easy/ ./EuRoC_TimeStamps/MH02.txt
 ```
 
 

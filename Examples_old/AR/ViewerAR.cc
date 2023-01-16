@@ -29,6 +29,14 @@ using namespace std;
 namespace ORB_SLAM3
 {
 
+
+cv::Mat& Eigen2CvMat(Eigen::Vector3f& src){
+    cv::Mat target(cv::Size(1, 3), CV_32FC1, cv::Scalar(0));
+    target.at<float>(0, 0) = src(0);
+    target.at<float>(1, 0) = src(1);
+    target.at<float>(2, 0) = src(2);
+    return target;
+}
 const float eps = 1e-4;
 
 cv::Mat ExpSO3(const float &x, const float &y, const float &z)
@@ -402,7 +410,9 @@ Plane* ViewerAR::DetectPlane(const cv::Mat Tcw, const std::vector<MapPoint*> &vM
         {
             if(pMP->Observations()>5)
             {
-                vPoints.push_back(pMP->GetWorldPos());
+                auto tmp_pos = pMP->GetWorldPos();
+                cv::Mat pos = Eigen2CvMat(tmp_pos);
+                vPoints.push_back(pos);
                 vPointMP.push_back(pMP);
             }
         }
@@ -527,7 +537,8 @@ void Plane::Recompute()
         MapPoint* pMP = mvMPs[i];
         if(!pMP->isBad())
         {
-            cv::Mat Xw = pMP->GetWorldPos();
+            auto tmp_Xw = pMP->GetWorldPos();
+            cv::Mat Xw = Eigen2CvMat(tmp_Xw);            
             o+=Xw;
             A.row(nPoints).colRange(0,3) = Xw.t();
             nPoints++;
