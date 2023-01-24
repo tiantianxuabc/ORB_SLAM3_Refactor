@@ -131,6 +131,11 @@ Execute the following script to process sequences and compute the RMS ATE:
 ./mono_inertial_euroc ../../Vocabulary/ORBvoc.txt  EuRoC.yaml /home/myneml/Downloads/Data_SLAM/MH_02_easy/ ./EuRoC_TimeStamps/MH02.txt
 ```
 
+### AR  
+```
+ ./MonoAR ../../Vocabulary/ORBvoc.txt  EuRoC.yaml  /home/myneml/Downloads/Data_SLAM/MH_02_easy/   ./EuRoC_TimeStamps/MH02.txt  
+ ./MonoAR ../../Vocabulary/ORBvoc.txt  EuRoC.yaml  /home/myneml/Downloads/Data_SLAM/V1_01_easy/   ./EuRoC_TimeStamps/V101.txt
+```
 
 # 8. Running time analysis
 A flag in `include\Config.h` activates time measurements. It is necessary to uncomment the line `#define REGISTER_TIMES` to obtain the time stats of one execution which is shown at the terminal and stored in a text file(`ExecTimeMean.txt`).

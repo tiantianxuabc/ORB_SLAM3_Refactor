@@ -109,13 +109,13 @@ void ViewerAR::Run()
 
     pangolin::GlTexture imageTexture(w,h,GL_RGB,false,0,GL_RGB,GL_UNSIGNED_BYTE);
 
+
     pangolin::OpenGlMatrixSpec P = pangolin::ProjectionMatrixRDF_TopLeft(w,h,fx,fy,cx,cy,0.001,1000);
 
     vector<Plane*> vpPlane;
 
     while(1)
     {
-
         if(menu_LocalizationMode && !bLocalizationMode)
         {
             mpSystem->ActivateLocalizationMode();
@@ -128,24 +128,19 @@ void ViewerAR::Run()
         }
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         // Activate camera view
         d_image.Activate();
         glColor3f(1.0,1.0,1.0);
-
         // Get last image and its computed pose from SLAM
         GetImagePose(im,Tcw,status,vKeys,vMPs);
-
         // Add text to image
         PrintStatus(status,bLocalizationMode,im);
-
         if(menu_drawpoints)
             DrawTrackedPoints(vKeys,vMPs,im);
-
         // Draw image
+        // std::cout<<"imageTexture: "<<imageTexture<<std::endl;
         if(menu_drawim)
-            DrawImageTexture(imageTexture,im);
-
+           DrawImageTexture(imageTexture,im);
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // Load camera projection
@@ -156,7 +151,6 @@ void ViewerAR::Run()
 
         // Load camera pose
         LoadCameraPose(Tcw);
-
         // Draw virtual things
         if(status==2)
         {
@@ -231,10 +225,7 @@ void ViewerAR::Run()
                     }
                 }
             }
-
-
         }
-
         pangolin::FinishFrame();
         usleep(mT*1000);
     }
